@@ -11,9 +11,14 @@ public class BaseNLogarithm extends AbstractFunction {
     }
     @Override
     public double calculate(double x, double eps) {
-        if (x<=0|| base<=0|| base ==1){
+        if (x <= 0 || base <= 0 || base == 1 || eps <= 0) {
             return Double.NaN;
         }
-        return ln.calculate(x, base)/ ln.calculate(base,x);
+        double numerator = ln.calculate(x, eps);
+        double denominator = ln.calculate(base, eps);
+        if (Double.isNaN(numerator) || Double.isNaN(denominator) || denominator == 0.0) {
+            return Double.NaN;
+        }
+        return numerator / denominator;
     }
 }
