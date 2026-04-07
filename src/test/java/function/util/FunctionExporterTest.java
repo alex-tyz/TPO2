@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FunctionExporterTest {
@@ -25,5 +26,12 @@ public class FunctionExporterTest {
         assertTrue(Files.exists(tempDir.resolve("log10.csv")));
         assertTrue(Files.exists(tempDir.resolve("logSystem.csv")));
         assertTrue(Files.exists(tempDir.resolve("system.csv")));
+    }
+
+    @Test
+    void shouldFailWhenRangeIsInvalid() {
+        FunctionExporter exporter = new FunctionExporter(new CsvExporter());
+        assertThrows(IllegalArgumentException.class,
+                () -> exporter.exportAll(tempDir, 2, 1, 1.0, 1e-3));
     }
 }
