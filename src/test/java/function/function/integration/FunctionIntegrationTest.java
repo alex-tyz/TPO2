@@ -7,26 +7,29 @@ import function.log.LogSystem;
 import function.trig.Cos;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class FunctionIntegrationTest {
 
+    private static final double EPS = 1e-4;
+
     @Test
     void testBranching() {
         Cos cos = mock(Cos.class);
         LogSystem logSystem = mock(LogSystem.class);
-
         Function function = new Function(cos, logSystem);
 
-        function.calculate(-1, 1e-4);
+        function.calculate(-1, EPS);
 
-        verify(cos, times(1)).calculate(anyDouble(), anyDouble());
-        verify(logSystem, never()).calculate(anyDouble(), anyDouble());
+        assertAll(
+                () -> verify(cos, times(1)).calculate(anyDouble(), anyDouble()),
+                () -> verify(logSystem, never()).calculate(anyDouble(), anyDouble())
+        );
 
-        function.calculate(2, 1e-4);
+        function.calculate(2, EPS);
 
         verify(logSystem, times(1)).calculate(anyDouble(), anyDouble());
     }
@@ -42,12 +45,13 @@ public class FunctionIntegrationTest {
         LogSystem logSystem = new LogSystem(ln, log2, log10);
 
         Function function = new Function(cos, logSystem);
+        double result = function.calculate(-1.0, EPS);
 
-        double result = function.calculate(-1.0, 1e-4);
-
-        assertEquals(0.5, result, 1e-9);
-        verify(cos).calculate(eq(-1.0), anyDouble());
-        verifyNoInteractions(ln, log2, log10);
+        assertAll(
+                () -> assertEquals(0.5, result, 1e-9),
+                () -> verify(cos).calculate(eq(-1.0), anyDouble()),
+                () -> verifyNoInteractions(ln, log2, log10)
+        );
     }
 
     @Test
@@ -73,12 +77,14 @@ public class FunctionIntegrationTest {
         double part = (lnValue * log2Value) / denominator;
         double expected = Math.pow(part * log2Value, 2) + lnValue;
 
-        double result = function.calculate(x, 1e-4);
+        double result = function.calculate(x, EPS);
 
-        assertEquals(expected, result, 1e-9);
-        verify(ln).calculate(eq(x), anyDouble());
-        verify(log2).calculate(eq(x), anyDouble());
-        verify(log10).calculate(eq(x), anyDouble());
-        verifyNoInteractions(cos);
+        assertAll(
+                () -> assertEquals(expected, result, 1e-9),
+                () -> verify(ln).calculate(eq(x), anyDouble()),
+                () -> verify(log2).calculate(eq(x), anyDouble()),
+                () -> verify(log10).calculate(eq(x), anyDouble()),
+                () -> verifyNoInteractions(cos)
+        );
     }
 }

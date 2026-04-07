@@ -1,6 +1,8 @@
 package function.trig.module;
 
 import function.trig.Cos;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -9,31 +11,37 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class CosTest {
+
+    private static final double EPS = 1e-5;
+    private static final double DELTA = 1e-2;
+
+    private Cos cos;
+
+    @BeforeEach
+    void setUp() {
+        cos = new Cos();
+    }
+
     @ParameterizedTest
-    @CsvFileSource(resources = "/cos.csv",numLinesToSkip = 1)
+    @CsvFileSource(resources = "/cos.csv", numLinesToSkip = 1)
     void testCos(double x, double expected) {
-        Cos cos = new Cos();
-        double result = cos.calculate(x, 1e-4);
-        assertEquals(expected, result, 1e-2);
+        assertEquals(expected, cos.calculate(x, 1e-4), DELTA);
     }
 
     @ParameterizedTest
     @MethodSource("cosClasses")
     void shouldMatchMathCos(double x, double expected) {
-        Cos cos = new Cos();
-        assertEquals(expected, cos.calculate(x, 1e-5), 1e-3);
+        assertEquals(expected, cos.calculate(x, EPS), 1e-3);
     }
 
     @ParameterizedTest
     @ValueSource(doubles = {Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY})
     void shouldReturnNaNForInvalidInputs(double input) {
-        Cos cos = new Cos();
-        assertTrue(Double.isNaN(cos.calculate(input, 1e-5)));
+        assertTrue(Double.isNaN(cos.calculate(input, EPS)));
     }
 
     private static Stream<Arguments> cosClasses() {

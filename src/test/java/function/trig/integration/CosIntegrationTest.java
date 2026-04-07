@@ -4,19 +4,19 @@ import function.trig.Cos;
 import function.trig.Sin;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CosIntegrationTest {
+
+    private static final double EPS = 1e-4;
 
     @Test
     void simpleCheck() {
         Cos cos = new Cos();
-        assertEquals(1, cos.calculate(0, 1e-4), 1e-2);
+        assertEquals(1, cos.calculate(0, EPS), 1e-2);
     }
 
     @Test
@@ -25,10 +25,12 @@ public class CosIntegrationTest {
         when(sin.calculate(eq(0.5), anyDouble())).thenReturn(0.5);
 
         Cos cos = new Cos(sin);
-        double result = cos.calculate(0.5, 1e-4);
-
+        double result = cos.calculate(0.5, EPS);
         double expected = Math.sqrt(1 - 0.25);
-        assertEquals(expected, result, 1e-6);
-        verify(sin).calculate(eq(0.5), anyDouble());
+
+        assertAll(
+                () -> assertEquals(expected, result, 1e-6),
+                () -> verify(sin).calculate(eq(0.5), anyDouble())
+        );
     }
 }

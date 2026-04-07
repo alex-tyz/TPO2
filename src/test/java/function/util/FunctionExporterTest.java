@@ -7,8 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FunctionExporterTest {
 
@@ -20,12 +19,14 @@ public class FunctionExporterTest {
         FunctionExporter exporter = new FunctionExporter(new CsvExporter());
         exporter.exportAll(tempDir, -1, 2, 1.0, 1e-3);
 
-        assertTrue(Files.exists(tempDir.resolve("cos.csv")));
-        assertTrue(Files.exists(tempDir.resolve("ln.csv")));
-        assertTrue(Files.exists(tempDir.resolve("log2.csv")));
-        assertTrue(Files.exists(tempDir.resolve("log10.csv")));
-        assertTrue(Files.exists(tempDir.resolve("logSystem.csv")));
-        assertTrue(Files.exists(tempDir.resolve("system.csv")));
+        assertAll(
+                () -> assertTrue(Files.exists(tempDir.resolve("cos.csv"))),
+                () -> assertTrue(Files.exists(tempDir.resolve("ln.csv"))),
+                () -> assertTrue(Files.exists(tempDir.resolve("log2.csv"))),
+                () -> assertTrue(Files.exists(tempDir.resolve("log10.csv"))),
+                () -> assertTrue(Files.exists(tempDir.resolve("logSystem.csv"))),
+                () -> assertTrue(Files.exists(tempDir.resolve("system.csv")))
+        );
     }
 
     @Test

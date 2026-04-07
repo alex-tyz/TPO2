@@ -19,12 +19,14 @@ public class CsvExporter {
         DECIMAL_FORMAT = new DecimalFormat("0.############", symbols);
     }
 
-    public void export(AbstractFunction function,
-                       double from,
-                       double to,
-                       double step,
-                       double eps,
-                       Path targetFile) throws IOException {
+    public void export(
+            AbstractFunction function,
+            double from,
+            double to,
+            double step,
+            double eps,
+            Path targetFile
+    ) throws IOException {
         if (step <= 0) {
             throw new IllegalArgumentException("Step must be positive");
         }

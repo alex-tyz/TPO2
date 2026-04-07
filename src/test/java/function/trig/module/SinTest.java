@@ -1,6 +1,8 @@
 package function.trig.module;
 
 import function.trig.Sin;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvFileSource;
@@ -9,32 +11,37 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class SinTest {
 
+    private static final double EPS = 1e-5;
+    private static final double DELTA = 1e-3;
+
+    private Sin sin;
+
+    @BeforeEach
+    void setUp() {
+        sin = new Sin();
+    }
+
     @ParameterizedTest
     @CsvFileSource(resources = "/sin.csv", numLinesToSkip = 1)
     void testSinFromTable(double x, double expected) {
-        Sin sin = new Sin();
-        double result = sin.calculate(x, 1e-5);
-        assertEquals(expected, result, 1e-3);
+        assertEquals(expected, sin.calculate(x, EPS), DELTA);
     }
 
     @ParameterizedTest
     @MethodSource("sinClasses")
     void shouldMatchMathSin(double x, double expected) {
-        Sin sin = new Sin();
-        assertEquals(expected, sin.calculate(x, 1e-5), 1e-4);
+        assertEquals(expected, sin.calculate(x, EPS), 1e-4);
     }
 
     @ParameterizedTest
     @ValueSource(doubles = {Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY})
     void shouldReturnNaNForInvalidInputs(double input) {
-        Sin sin = new Sin();
-        assertTrue(Double.isNaN(sin.calculate(input, 1e-5)));
+        assertTrue(Double.isNaN(sin.calculate(input, EPS)));
     }
 
     private static Stream<Arguments> sinClasses() {

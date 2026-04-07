@@ -8,15 +8,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class LogSystemTest {
+
+    private static final double EPS = 1e-4;
+    private static final double DELTA = 1e-6;
 
     @ParameterizedTest
     @CsvFileSource(resources = "/integration/logIT.csv", numLinesToSkip = 1)
@@ -30,13 +30,14 @@ public class LogSystemTest {
         when(log10.calculate(eq(x), anyDouble())).thenReturn(log10Value);
 
         LogSystem logSystem = new LogSystem(ln, log2, log10);
-
         double expected = expectedValue(lnValue, log2Value, log10Value);
 
-        assertEquals(expected, logSystem.calculate(x, 1e-4), 1e-6);
-        verify(ln).calculate(eq(x), anyDouble());
-        verify(log2).calculate(eq(x), anyDouble());
-        verify(log10).calculate(eq(x), anyDouble());
+        assertAll(
+                () -> assertEquals(expected, logSystem.calculate(x, EPS), DELTA),
+                () -> verify(ln).calculate(eq(x), anyDouble()),
+                () -> verify(log2).calculate(eq(x), anyDouble()),
+                () -> verify(log10).calculate(eq(x), anyDouble())
+        );
     }
 
     @Test
@@ -48,15 +49,16 @@ public class LogSystemTest {
 
         BaseNLogarithm log2 = new BaseNLogarithm(new Ln(), 2);
         BaseNLogarithm log10 = new BaseNLogarithm(new Ln(), 10);
-
         LogSystem logSystem = new LogSystem(lnMock, log2, log10);
 
         double expected = expectedValue(lnValue,
                 log2.calculate(x, 1e-5),
                 log10.calculate(x, 1e-5));
 
-        assertEquals(expected, logSystem.calculate(x, 1e-5), 1e-6);
-        verify(lnMock).calculate(eq(x), anyDouble());
+        assertAll(
+                () -> assertEquals(expected, logSystem.calculate(x, 1e-5), DELTA),
+                () -> verify(lnMock).calculate(eq(x), anyDouble())
+        );
     }
 
     @Test
@@ -70,15 +72,16 @@ public class LogSystemTest {
         when(log2.calculate(eq(x), anyDouble())).thenReturn(log2Value);
 
         BaseNLogarithm log10 = new BaseNLogarithm(new Ln(), 10);
-
         LogSystem logSystem = new LogSystem(ln, log2, log10);
 
         double expected = expectedValue(lnValue,
                 log2Value,
                 log10.calculate(x, 1e-5));
 
-        assertEquals(expected, logSystem.calculate(x, 1e-5), 1e-6);
-        verify(log2).calculate(eq(x), anyDouble());
+        assertAll(
+                () -> assertEquals(expected, logSystem.calculate(x, 1e-5), DELTA),
+                () -> verify(log2).calculate(eq(x), anyDouble())
+        );
     }
 
     @Test
@@ -99,8 +102,10 @@ public class LogSystemTest {
                 log2.calculate(x, 1e-5),
                 log10Value);
 
-        assertEquals(expected, logSystem.calculate(x, 1e-5), 1e-6);
-        verify(log10).calculate(eq(x), anyDouble());
+        assertAll(
+                () -> assertEquals(expected, logSystem.calculate(x, 1e-5), DELTA),
+                () -> verify(log10).calculate(eq(x), anyDouble())
+        );
     }
 
     @ParameterizedTest
