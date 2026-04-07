@@ -11,6 +11,9 @@ public class Function extends AbstractFunction{
     }
     @Override
     public double calculate(double x,double eps) {
+        if (Double.isNaN(x) || Double.isNaN(eps) || !Double.isFinite(eps) || eps <= 0) {
+            return Double.NaN;
+        }
         return (x<=0)
                 ? cos.calculate(x,eps)
                 : logSystem.calculate(x,eps);
